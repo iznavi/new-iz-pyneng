@@ -49,3 +49,29 @@ bin_ip = "00001010000000010000000111000011"
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+
+net = input("Введите IP-сеть в формате 10.0.0.0/24: ")
+
+ip = net[0:net.find("/"):].split('.')
+ip_bin = f"{int(ip[0]):08b}{int(ip[1]):08b}{int(ip[2]):08b}{int(ip[3]):08b}"
+mask = net[net.find("/")+1::]
+mask_bin = "1" * int(mask) + "0" * (32-int(mask))
+listmask = [mask_bin[0:8], mask_bin[8:16], mask_bin[16:24], mask_bin[24:32]]
+net_bin = ip_bin[0:int(mask):] + "0" * (32-int(mask))
+net_list = [net_bin[0:8], net_bin[8:16], net_bin[16:24], net_bin[24:32]]
+
+output_ip = """
+Network:
+{0:<10d}{1:<10}{2:<10}{3:<10}
+{0:08b}  {1:08b}  {2:08b}  {3:08b}
+"""
+
+output_net = """
+Mask:
+/{maskf}
+{0:<10}{1:<10}{2:<10}{3:<10}
+{0:08b}  {1:08b}  {2:08b}  {3:08b}
+"""
+
+print(output_ip.format(int(net_list[0],2), int(net_list[1],2), int(net_list[2],2), int(net_list[3],2)))
+print(output_net.format(int(listmask[0],2), int(listmask[1],2), int(listmask[2],2), int(listmask[3],2), maskf=mask))

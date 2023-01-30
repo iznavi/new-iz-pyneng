@@ -50,6 +50,10 @@ switchport mode trunk
 switchport trunk allowed vlan 2,3,4,5
 """
 
+mode = input("Введите режим работы интерфейса (access/trunk): ")
+interface = input("Введите тип и номер интерфейса: ")
+vlan = input("Введите номер влан(ов): ")
+
 access_template = [
     "switchport mode access",
     "switchport access vlan {}",
@@ -63,3 +67,14 @@ trunk_template = [
     "switchport mode trunk",
     "switchport trunk allowed vlan {}",
 ]
+
+access_str = '\n'.join(access_template)
+trunk_str = '\n'.join(trunk_template)
+
+switchport_dic = {
+    'access': access_str,
+    'trunk': trunk_str
+}
+
+print(f"interface {interface}")
+print(switchport_dic[mode].format(vlan))
