@@ -40,3 +40,15 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+data = list()
+with open('CAM_table.txt', 'r') as f:
+    for line in f:
+        if '.' in line:
+            l = line.split()
+            vlan, mac, _, intf = l
+            data.append([int(vlan), mac, intf])
+    data.sort()
+    for vlan, mac, intf in data:
+        print(f'{vlan:<10}{mac:20}{intf}')
+            
+            

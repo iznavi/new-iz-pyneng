@@ -19,19 +19,11 @@ from sys import argv
 
 ignore = ["duplex", "alias", "configuration"]
 
-src = argv[1]
-dst = argv[2]
-#file_name = 'config_sw1.txt'
-count = 0
+src_file, dst_file = argv[1], argv[2]
 
-with open(src, 'r') as s, open(dst, 'w') as d:
-    for line in s:
-        if not line.startswith('!'):
-            for word in ignore:
-                if word in line:
-                    count += 1
-                    break
-                else:
-                    count = 0
-            if count == 0:
-                d.write(line)
+with open(src_file) as src, open(dst_file, 'w') as dst:
+    for line in src:
+        words = line.split()
+        words_intersect = set(words) & set(ignore)
+        if not line.startswith("!") and not words_intersect:
+            dst.write(line)
