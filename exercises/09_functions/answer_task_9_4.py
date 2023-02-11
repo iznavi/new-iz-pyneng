@@ -67,21 +67,15 @@ def ignore_command(command, ignore):
 
 
 def convert_config_to_dict(config_filename):
-    config = {}
-    with open(config_filename, "r") as f:
+    config_dict = {}
+    with open(config_filename) as f:
         for line in f:
-            line = line.strip('\n')
-            if line and not line.startswith("!") and not ignore_command(line, ignore):
-                if line.startswith(" "):
-                    #sub_command.append(line.lstrip(" "))
-                    #config[main_line] = sub_command
-                    config[main_line].append(line.lstrip(" "))
-                #print(line.strip('\n'))
+            line = line.rstrip()
+            if line and not (line.startswith("!") or ignore_command(line, ignore)):
+                if line[0].isalnum():
+                    section = line
+                    config_dict[section] = []
                 else:
-                    sub_command = []
-                    config[line] = sub_command
-                    main_line = line
-    return config
-                
-                
-print(convert_config_to_dict("config_sw1.txt"))                
+                    config_dict[section].append(line.strip())
+    return config_dict
+
