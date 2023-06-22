@@ -43,18 +43,19 @@ def parse_cdp_neighbors(command_output):
     и с файлами и с выводом с оборудования.
     Плюс учимся работать с таким выводом.
     """
-    connect_dev = {}
-    for line in command_output.split('\n'):
+    result = {}
+    for line in command_output.split("\n"):
         line = line.strip()
-        column = line.split()
-        if "neighbors" in line:
-            local_inf = line.split('>')[0]
-        elif len(column) > 5 and column[3].isdigit():
-            r_dev, r_int, r_int_num, *other, l_int, l_int_num = column
-            connect_dev[(local_inf, r_int + r_int_num)] = (r_dev, l_int + l_int_num)
-    return connect_dev
-            
-        
+        columns = line.split()
+        if ">" in line:
+            hostname = line.split(">")[0]
+        # 3 индекс это столбец holdtime - там всегда число
+        elif len(columns) >= 5 and columns[3].isdigit():
+            r_host, l_int, l_int_num, *other, r_int, r_int_num = columns
+            result[(hostname, l_int + l_int_num)] = (r_host, r_int + r_int_num)
+    return result
+
+
 if __name__ == "__main__":
     with open("sh_cdp_n_sw1.txt") as f:
         print(parse_cdp_neighbors(f.read()))

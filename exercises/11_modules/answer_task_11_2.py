@@ -40,20 +40,15 @@ infiles = [
 
 
 def create_network_map(filenames):
-    """
-    Обрабатывает
-    вывод команды show cdp neighbors из нескольких файлов и объединяет его в одну
-    общую топологию.
+    network_map = {}
 
-    У функции должен быть один параметр filenames, который ожидает как аргумент
-    список с именами файлов, в которых находится вывод команды show cdp neighbors.
-    """
-    topology = {}
-    for file in filenames:
-        with open(file) as f:
-            topology.update(parse_cdp_neighbors(f.read()))
-    return topology
+    for filename in filenames:
+        with open(filename) as show_command:
+            parsed = parse_cdp_neighbors(show_command.read())
+            network_map.update(parsed)
+    return network_map
 
 
 if __name__ == "__main__":
-    pprint(create_network_map(infiles))
+    topology = create_network_map(infiles)
+    pprint(topology)

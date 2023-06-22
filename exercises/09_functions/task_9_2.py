@@ -78,4 +78,4 @@ def generate_trunk_config(intf_vlan_mapping, trunk_template):
                 config.append(command)
     return config
 
-print(generate_trunk_config(trunk_config, trunk_mode_template))
+print(generate_trunk_config(trunk_config_2, trunk_mode_template))
