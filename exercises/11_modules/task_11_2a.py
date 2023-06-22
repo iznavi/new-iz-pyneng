@@ -85,9 +85,6 @@ infiles = [
     "sh_cdp_n_r3.txt",
 ]
 
-topology = create_network_map(infiles)
-draw_topology(topology)
-
 
 def unique_network_map(topology_dict):
     """
@@ -103,4 +100,7 @@ def unique_network_map(topology_dict):
 
 
 if __name__ == "__main__":
+    topology = create_network_map(infiles)
+    new_topology = unique_network_map(topology)
+    draw_topology(new_topology)
     pprint(unique_network_map(topology))
