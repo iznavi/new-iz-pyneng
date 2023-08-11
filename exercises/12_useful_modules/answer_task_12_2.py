@@ -37,36 +37,21 @@
 import ipaddress
 
 
-def convert_ranges_to_ip_list(ip_list):
-    """
-    Функция конвертирует список IP-адресов в разных форматах в список,
-    где каждый IP-адрес указан отдельно.
-    """
-    add_ips = []
-    for ip in ip_list:
-        if "-" in ip:
-            cur_ip = ip.split("-")
-            start_ip = cur_ip[0]
-            try:
-                ipaddress.ip_address(cur_ip[1])
-                add_ips.append(start_ip)
-                new_ip = ipaddress.ip_address(start_ip)
-                for i in range(int(start_ip.split(".")[3]), int(cur_ip[1].split(".")[3])):
-                    new_ip += 1
-                    add_ips.append(str(new_ip))
-                print(add_ips)
-            except ValueError:
-                end_octet = int(cur_ip[1])
-                add_ips.append(start_ip)
-                new_ip = ipaddress.ip_address(start_ip)
-                for i in range(int(start_ip.split(".")[3]), end_octet):
-                    new_ip += 1
-                    add_ips.append(str(new_ip))
-                print(add_ips)
+def convert_ranges_to_ip_list(ip_addresses):
+    ip_list = []
+    for ip_address in ip_addresses:
+        if "-" in ip_address:
+            start_ip, stop_ip = ip_address.split("-")
+            if "." not in stop_ip:
+                stop_ip = ".".join(start_ip.split(".")[:-1] + [stop_ip])
+            start_ip = ipaddress.ip_address(start_ip)
+            stop_ip = ipaddress.ip_address(stop_ip)
+            for ip in range(int(start_ip), int(stop_ip) + 1):
+                ip_list.append(str(ipaddress.ip_address(ip)))
         else:
-            add_ips.append(ip)
-    return add_ips
-            
+            ip_list.append(ip_address)
+    return ip_list
+
 
 if __name__ == "__main__":
     some_ip = ['8.8.4.4', '1.1.1.1-3', '172.21.41.128-172.21.41.132']

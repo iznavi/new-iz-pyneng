@@ -32,24 +32,23 @@ object network LOCAL_10.1.9.5
 
 Во всех правилах для ASA интерфейсы будут одинаковыми (inside,outside).
 """
-
 import re
 
 
-def convert_ios_nat_to_asa(in_file, out_file):
-    
-    regex = re.compile("(?:\S+ ){6}(?P<ip>\S+) (?P<in_port>\d+) \S+ (?P<inf>\S+) (?P<out_port>\d+)")
-    pattern = (
-        "object network LOCAL_{ip}\n"
-        " host {ip}\n"
-        " nat (inside,outside) static interface service tcp {in_port} {out_port}\n"
+def convert_ios_nat_to_asa(cisco_ios, cisco_asa):
+    regex = (
+        "tcp (?P<local_ip>\S+) +(?P<lport>\d+) +interface +\S+ (?P<outside_port>\d+)"
     )
-    with open(in_file) as src, open(out_file, 'w') as dst:
-#        print(regex.findall(src.read()))
-        for line in src:
-            match = regex.search(line)
-            dst.write(pattern.format(**match.groupdict()))
+    asa_template = (
+        "object network LOCAL_{local_ip}\n"
+        " host {local_ip}\n"
+        " nat (inside,outside) static interface service tcp {lport} {outside_port}\n"
+    )
+    with open(cisco_ios) as f, open(cisco_asa, "w") as asa_nat_cfg:
+        data = re.finditer(regex, f.read())
+        for match in data:
+            asa_nat_cfg.write(asa_template.format(**match.groupdict()))
 
-        
+
 if __name__ == "__main__":
-    convert_ios_nat_to_asa("cisco_nat_config.txt", "asa_nat_config.txt")
+    convert_ios_nat_to_asa("cisco_nat_config.txt", "cisco_asa_config.txt")
