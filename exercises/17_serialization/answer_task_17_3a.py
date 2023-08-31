@@ -36,34 +36,22 @@
 в файл topology.yaml. Он понадобится в следующем задании.
 
 """
-
-import re
 import yaml
 import glob
-from pprint import pprint
+from task_17_3 import parse_sh_cdp_neighbors
 
 
 def generate_topology_from_cdp(list_of_files, save_to_filename=None):
-    
-    regex = re.compile(r"(?P<dev>\S+) +(?P<lint>\S+ \d\S+) +\d+ +[\w ]+ +\S+ +(?P<port>\S+ \d\S+)")
-    
-    result = {}
-    
-    for file in list_of_files:
-        with open(file) as f:
-            file_read = f.read()
-            match_iter = re.finditer(regex, file_read)
-            device = re.search(r"(\S+)[>#]", file_read).group(1)
-            result[device] = {}
-            for match in match_iter:
-                lint, dev, port = match.group('lint', 'dev', 'port')
-                result[device][lint] = {dev: port}
-    if save_to_filename != None:
-        with open(save_to_filename, 'w') as f:
-            yaml.dump(result, f, default_flow_style=False)
-    return result
+    topology = {}
+    for filename in list_of_files:
+        with open(filename) as f:
+            topology.update(parse_sh_cdp_neighbors(f.read()))
+    if save_to_filename:
+        with open(save_to_filename, "w") as f_out:
+            yaml.dump(topology, f_out, default_flow_style=False)
+    return topology
 
 
 if __name__ == "__main__":
-    sh_cdp_files = glob.glob("sh_cdp_n*")
-    pprint(generate_topology_from_cdp(sh_cdp_files, "topology.yaml"))
+    f_list = glob.glob("sh_cdp_n_*")
+    print(generate_topology_from_cdp(f_list, save_to_filename="topology.yaml"))

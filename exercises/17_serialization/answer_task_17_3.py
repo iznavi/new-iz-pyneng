@@ -25,30 +25,22 @@ R6           Fa 0/2          143           R S I           2811       Fa 0/0
 Проверить работу функции на содержимом файла sh_cdp_n_sw1.txt
 """
 import re
-import csv
-from pprint import pprint
 
 
+def parse_sh_cdp_neighbors(command_output):
+    regex = re.compile(
+        r"(?P<r_dev>\w+)  +(?P<l_intf>\S+ \S+)"
+        r"  +\d+  +[\w ]+  +\S+ +(?P<r_intf>\S+ \S+)"
+    )
+    connect_dict = {}
+    l_dev = re.search(r"(\S+)[>#]", command_output).group(1)
+    connect_dict[l_dev] = {}
+    for match in regex.finditer(command_output):
+        r_dev, l_intf, r_intf = match.group("r_dev", "l_intf", "r_intf")
+        connect_dict[l_dev][l_intf] = {r_dev: r_intf}
+    return connect_dict
 
-def parse_sh_cdp_neighbors(sh_cdp_str):
-    
-    regex = re.compile(r"(?P<dev>\S+) +(?P<lint>\S+ \d\S+)(?: +\S+){5} +(?P<port>\S+ \d\S+)")
-    
-    result = {}
-    
-    match_iter = re.finditer(regex, sh_cdp_str)
-    device = re.search(r"(\S+)>", sh_cdp_str).group(1)
-    result[device] = {}
-    for match in match_iter:
-        intf = {}
-        intf[match.group('dev')] = match.group('port')
-        result[device][match.group('lint')] = intf
-    return result
-    
-    
+
 if __name__ == "__main__":
     with open("sh_cdp_n_sw1.txt") as f:
-        file = f.read()
-        pprint(parse_sh_cdp_neighbors(file))
-        
-    
+        print(parse_sh_cdp_neighbors(f.read()))

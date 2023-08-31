@@ -45,26 +45,21 @@
 """
 import yaml
 from draw_network_graph import draw_topology
-from pprint import pprint
 
 
-def transform_topology(filename):
-    
-    with open(filename) as f:
+def transform_topology(topology_filename):
+    with open(topology_filename) as f:
         raw_topology = yaml.safe_load(f)
-        topology = {}
-        for keys, values in raw_topology.items():
-            for key, value in values.items():
-                for k, v in value.items():
-                    topology[(keys, key)] = (k, v)
 
-    network_map = {}
-    for key, value in topology.items():
-        key, value = sorted([key, value])
-        network_map[key] = value
-    pprint(network_map)
-    return network_map
-    
+    formatted_topology = {}
+    for l_device, peer in raw_topology.items():
+        for l_int, remote in peer.items():
+            r_device, r_int = list(remote.items())[0]
+            if not (r_device, r_int) in formatted_topology:
+                formatted_topology[(l_device, l_int)] = (r_device, r_int)
+    return formatted_topology
+
 
 if __name__ == "__main__":
-    draw_topology(transform_topology("topology.yaml"))
+    formatted_topology = transform_topology("topology.yaml")
+    draw_topology(formatted_topology)
